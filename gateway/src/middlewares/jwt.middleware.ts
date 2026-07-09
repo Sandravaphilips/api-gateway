@@ -4,7 +4,7 @@ import type { JwtUser } from '../../../shared/types';
 const jwt = require('jsonwebtoken');
 const { publicRoutes } = require('../constants');
 
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
   user?: JwtUser;
 }
 
