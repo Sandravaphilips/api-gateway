@@ -6,15 +6,14 @@ const { getChannel } = require('../config/broker');
 const auditMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
   if (!req.user) return next();
 
-  const { method, originalUrl, body } = req;
-  const timestamp = new Date().toISOString();
-
   const auditEvent = {
     userId: req.user.id,
-    method,
-    originalUrl,
-    body,
-    timestamp,
+    action: req.method,
+    status: 'AUTHORIZED',
+    service: req.params.serviceName,
+    path: req.originalUrl,
+    ipAddress: req.ip,
+    userAgent: req.headers['user-agent'],
   };
 
   try {
