@@ -12,7 +12,7 @@ async function registerUser(userDetails: types.IUser) {
     throw new Error('Account already exists');
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, 12);
 
   const newUser = new User({ username, email, password: hashedPassword });
   await newUser.save();
@@ -22,7 +22,7 @@ async function registerUser(userDetails: types.IUser) {
 async function loginUser(usernameOrEmail: string, password: string) {
   const user = await User.findOne({ $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }] });
   if (!user) {
-    throw new Error('User not found');
+    throw new Error('Invalid details. Please check your username/email and password.');
   }
 
   const isMatch = await bcrypt.compare(password, user.password);

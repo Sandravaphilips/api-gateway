@@ -1,22 +1,32 @@
 import type { Request, Response, NextFunction } from "express";
 
 const { createProxyMiddleware } = require("http-proxy-middleware");
+const { allowedServices } = require("../constants");
+
+const proxyCache = new Map<string, ReturnType<typeof createProxyMiddleware>>();
+
+const getProxy = (serviceName: string) => {
+  if (!proxyCache.has(serviceName)) {
+    const serviceUrl = process.env[`${serviceName.toUpperCase()}_SERVICE_URL`];
+    proxyCache.set(
+      serviceName,
+      createProxyMiddleware({
+        target: serviceUrl,
+        changeOrigin: true,
+        pathRewrite: { [`^/v1/api/${serviceName}`]: "" },
+      }),
+    );
+  }
+  return proxyCache.get(serviceName)!;
+};
 
 const proxyMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const serviceName = req.params.serviceName as string;
-  const serviceUrl = process.env[`${serviceName.toUpperCase()}_SERVICE_URL`];
-  
-  if (!serviceUrl) {
-    return res.status(503).json({ message: `Service ${serviceName} not configured` });
+  if (!allowedServices.includes(serviceName)) {
+    return res.status(404).json({ message: `Service not found` });
   }
 
-  const proxy = createProxyMiddleware({
-    target: serviceUrl,
-    changeOrigin: true,
-    pathRewrite: {
-      [`^/v1/api/${serviceName}`]: "",
-    },
-  });
+  const proxy = getProxy(serviceName);
 
   return proxy(req, res, next);
 };

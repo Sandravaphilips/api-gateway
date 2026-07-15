@@ -10,7 +10,7 @@ async function auditWorker() {
     await channel.assertQueue('audit_logs', { durable: true });
     console.log('Audit worker connected to RabbitMQ successfully');
 
-    channel.prefetch(1);
+    channel.prefetch(10);
     console.log('Audit worker is waiting for messages in the audit_logs queue...');
 
     channel.consume('audit_logs', async (msg: ConsumeMessage | null) => {
@@ -26,7 +26,6 @@ async function auditWorker() {
     );
   } catch (error) {
     console.error('Audit worker failed to connect to RabbitMQ:', error);
-    process.exit(1);
   }
 }
 

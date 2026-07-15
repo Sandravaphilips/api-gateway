@@ -1,7 +1,7 @@
 import mongoose = require('mongoose');
 
 const auditLogSchema = new mongoose.Schema({
-  userId: { type: String, required: true },
+  userId: { type: String, required: false },
   action: { type: String, required: true },
   status: { type: String, required: true },
   service: { type: String, required: true },

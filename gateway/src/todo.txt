@@ -1,0 +1,5 @@
+rate limiting
+sanitize req.params
+encrypt sensitive metdata
+track token change mid-session
+Move broker.ts to the /shared

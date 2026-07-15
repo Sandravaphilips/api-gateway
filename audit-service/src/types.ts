@@ -1,5 +1,5 @@
 export interface LogData {
-  userId: string;
+  userId?: string;
   action: string;
   status: string;
   service: string;
