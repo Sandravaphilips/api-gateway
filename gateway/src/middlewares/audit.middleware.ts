@@ -1,19 +1,23 @@
-import type { Response, NextFunction } from 'express';
-import type { AuthRequest} from './jwt.middleware';
+import type { Response, NextFunction } from "express";
+import type { AuthRequest } from "./jwt.middleware";
 
-const { getChannel } = require('../config/broker');
+const { getChannel } = require("../config/broker");
 
-const auditMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
+const auditMiddleware = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
   if (!req.user) return next();
 
   const auditEvent = {
     userId: req.user.id,
     action: req.method,
-    status: 'AUTHORIZED',
+    status: "AUTHORIZED",
     service: req.params.serviceName,
     path: req.originalUrl,
     ipAddress: req.ip,
-    userAgent: req.headers['user-agent'],
+    userAgent: req.headers["user-agent"],
   };
 
   try {

@@ -1,10 +1,10 @@
 const publicRoutes = [
-  '/v1/api/auth/login',
-  '/v1/api/auth/register',
-  '/v1/api/auth/forgot-password',
-  '/v1/api/auth/reset-password',
+  "/v1/api/auth/login",
+  "/v1/api/auth/register",
+  "/v1/api/auth/forgot-password",
+  "/v1/api/auth/reset-password",
 ];
 
-const allowedServices = ['auth', 'protected'];
+const allowedServices = ["auth", "protected"];
 
 module.exports = { publicRoutes, allowedServices };

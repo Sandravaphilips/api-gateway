@@ -1,4 +1,4 @@
-import mongoose = require('mongoose');
+import mongoose = require("mongoose");
 
 const auditLogSchema = new mongoose.Schema({
   userId: { type: String, required: false },
@@ -12,6 +12,6 @@ const auditLogSchema = new mongoose.Schema({
   metadata: { type: mongoose.Schema.Types.Mixed, required: false },
 });
 
-const AuditLog = mongoose.model('AuditLog', auditLogSchema);
+const AuditLog = mongoose.model("AuditLog", auditLogSchema);
 
 module.exports = AuditLog;

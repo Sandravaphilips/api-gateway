@@ -1,6 +1,6 @@
-require('dotenv').config(); 
-require('./config/database');
+require("dotenv").config();
+require("./config/database");
 
-const auditWorker = require('./audit.worker');
+const auditWorker = require("./audit.worker");
 
 auditWorker();
