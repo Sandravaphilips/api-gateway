@@ -14,84 +14,44 @@ A simple microservices architecture with an API gateway, authentication service,
 
 **mock-protected-service** — A fake protected endpoint. Shows how other services would sit behind the gateway.
 
-**shared** — Shared types that everyone uses.
+**shared** — Shared utilities that everyone uses.
 
 ## Getting Started
 
 ### Prerequisites
-- Node 18+
+- Docker
 - MongoDB running
-- RabbitMQ running (for audit logging)
 
-### Setup
+### Environment variables
 
-Install dependencies in each service:
+Set these in your `.env` file:
+
 ```bash
-cd auth-service && npm install
-cd ../gateway && npm install
-cd ../audit-service && npm install
-cd ../mock-protected-service && npm install
+DATABASE_URL=your-mongodb-connection-string
+RABBITMQ_URL=amqp://rabbitmq:5672
+JWT_SECRET=your-secret
+GATEWAY_PORT=3000
+AUTH_PORT=3001
+PROTECTED_PORT=3002
+AUTH_SERVICE_URL=http://auth-service:3001
+PROTECTED_SERVICE_URL=http://protected-service:3002
 ```
 
-### Run Everything
-
-Start each service in its own terminal:
+## Run the stack
 
 ```bash
-# Terminal 1: Auth service
-cd auth-service && npm run dev
-
-# Terminal 2: Gateway
-cd gateway && npm run dev
-
-# Terminal 3: Audit service
-cd audit-service && npm run dev
-
-# Terminal 4: Mock protected service
-cd mock-protected-service && npm run dev
+docker compose up --build
 ```
 
 ## How It Works
 
-1. **Sign up** → `POST /auth/register` with `{ username, email, password }`
-2. **Log in** → `POST /auth/login` with credentials, get back a JWT token
+1. **Sign up** → `POST v1/auth/register` with `{ username, email, password }`
+2. **Log in** → `POST v1/auth/login` with credentials, get back a JWT token
 3. **Use it** → Include the token as `Authorization: Bearer <token>` in requests to protected endpoints
 4. **Audit logs** → Every login/registration gets logged to MongoDB asynchronously via RabbitMQ
 
 ## Useful Endpoints
 
-- `POST /api/auth/register` — Create an account
-- `POST /api/auth/login` — Get a token
-- `GET /api/protected/` — Protected route (requires token)
-
-## Environment Variables
-
-Create `.env` files in each service:
-
-**auth-service/.env:**
-```
-PORT=???
-DATABASE_URL=?????
-RABBITMQ_URL=?????
-JWT_SECRET=y?????
-```
-
-**gateway/.env:**
-```
-PORT=3000
-AUTH_SERVICE_URL=????
-PROTECTED_SERVICE_URL=????
-JWT_SECRET=????
-RABBITMQ_URL=????
-```
-
-**audit-service/.env:**
-```
-DATABASE_URL=????
-RABBITMQ_URL=????
-```
-
-**mock-protected-service/.env:**
-```
-PORT=????
-```
+- `POST v1/api/auth/register` — Create an account
+- `POST v1/api/auth/login` — Get a token
+- `GET v1/api/protected/` — Protected route (requires token)

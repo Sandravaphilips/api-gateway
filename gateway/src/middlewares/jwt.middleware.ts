@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import type { JwtUser } from "../../../shared/types";
+import type { JwtUser } from "../types";
 
 const jwt = require("jsonwebtoken");
 const { publicRoutes } = require("../constants");
