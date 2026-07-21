@@ -1,5 +1,5 @@
 import type { Response, NextFunction } from "express";
-import type { AuthRequest } from "./jwt.middleware";
+import type { AuthRequest } from "../types";
 
 const { getChannel } = require("../config/broker");
 

@@ -1,13 +1,12 @@
 import type { Channel } from "amqplib";
 
 const amqp = require("amqplib");
-
-const RABBITMQ_URL = process.env.RABBITMQ_URL || "amqp://localhost";
+const config = require("../config");
 let channel: Channel;
 
 const connectToRabbitMQ = async () => {
   try {
-    const connection = await amqp.connect(RABBITMQ_URL);
+    const connection = await amqp.connect(config.RABBITMQ_URL);
     channel = await connection.createChannel();
 
     await channel.assertQueue("audit_logs", { durable: true });

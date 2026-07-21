@@ -2,11 +2,12 @@ import type { ConsumeMessage } from "amqplib";
 
 const amqp = require("amqplib");
 const createAuditLog = require("./audit.service");
+const config = require("./config");
 
 async function auditWorker() {
   try {
     const connection = await amqp.connect(
-      process.env.RABBITMQ_URL || "amqp://localhost",
+      config.RABBITMQ_URL,
     );
     const channel = await connection.createChannel();
     await channel.assertQueue("audit_logs", { durable: true });

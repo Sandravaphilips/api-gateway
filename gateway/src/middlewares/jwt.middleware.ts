@@ -1,12 +1,8 @@
 import type { Request, Response, NextFunction } from "express";
-import type { JwtUser } from "../types";
+import type { AuthRequest, JwtUser } from "../types";
 
 const jwt = require("jsonwebtoken");
 const { publicRoutes } = require("../constants");
-
-export interface AuthRequest extends Request {
-  user?: JwtUser;
-}
 
 const jwtMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
   if (publicRoutes.includes(req.originalUrl)) {

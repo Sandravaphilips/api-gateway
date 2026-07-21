@@ -1,10 +1,11 @@
-import type types = require("./types");
+import type { IUser } from "./types";
 
+const config = require("./config");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User");
 
-async function registerUser(userDetails: types.IUser) {
+async function registerUser(userDetails: IUser) {
   const { username, email, password } = userDetails;
 
   const existingUser = await User.findOne({ $or: [{ username }, { email }] });
@@ -36,7 +37,7 @@ async function loginUser(usernameOrEmail: string, password: string) {
     );
   }
 
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ id: user._id }, config.JWT_SECRET, {
     expiresIn: "1h",
   });
 

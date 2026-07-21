@@ -1,12 +1,12 @@
 require("dotenv").config();
 require("./config/database");
 
+const config = require("./config");
 const express = require("express");
 const authRouter = require("./auth.router");
 const { connectToRabbitMQ } = require("./config/broker");
 
 const app = express();
-const port = process.env.PORT || 3001;
 
 app.use(express.json());
 
@@ -14,8 +14,8 @@ app.use("", authRouter);
 
 connectToRabbitMQ()
   .then(() => {
-    app.listen(port, () => {
-      console.log(`Server is running on port ${port}`);
+    app.listen(config.AUTH_PORT, () => {
+      console.log(`Server is running on port ${config.AUTH_PORT}`);
     });
   })
   .catch((error: any) => {

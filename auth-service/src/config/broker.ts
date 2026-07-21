@@ -1,8 +1,9 @@
 import type { Channel } from "amqplib";
 
 const amqp = require("amqplib");
+const config = require("../config");
 
-const RABBITMQ_URL = process.env.RABBITMQ_URL || "amqp://localhost";
+const RABBITMQ_URL = config.RABBITMQ_URL;
 let channel: Channel;
 
 const connectToRabbitMQ = async () => {
