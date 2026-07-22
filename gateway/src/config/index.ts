@@ -13,7 +13,7 @@ const configSchema = z.object({
   JWT_SECRET: z.string().min(10),
 });
 
-const parsedConfig = configSchema.safeParseAsync(process.env);
+const parsedConfig = configSchema.safeParse(process.env);
 
 if (!parsedConfig.success) {
   console.error("Invalid configuration:", parsedConfig.error.format());
