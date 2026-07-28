@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 
+const config = require("../config");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const { allowedServices } = require("../constants");
 
@@ -7,7 +8,7 @@ const proxyCache = new Map<string, ReturnType<typeof createProxyMiddleware>>();
 
 const getProxy = (serviceName: string) => {
   if (!proxyCache.has(serviceName)) {
-    const serviceUrl = process.env[`${serviceName.toUpperCase()}_SERVICE_URL`];
+    const serviceUrl = config[`${serviceName.toUpperCase()}_SERVICE_URL`];
     proxyCache.set(
       serviceName,
       createProxyMiddleware({

@@ -8,6 +8,8 @@ const proxyMiddleware = require("./middlewares/proxy.middleware");
 const auditMiddleware = require("./middlewares/audit.middleware");
 const jwtMiddleware = require("./middlewares/jwt.middleware");
 const { createRateLimiter, createAuthRateLimiter } = require("./middlewares/limiter.middleware");
+const validateService = require("./middlewares/validate.middleware");
+const serviceNameSchema = require("./schema/params.schema");
 
 const app = express();
 const globalLimiter = createRateLimiter(100, 15);
@@ -19,6 +21,7 @@ app.use(helmet());
 app.use("/v1/api/auth/login", authLimiter);
 app.use(
   "/v1/api/:serviceName",
+  validateService(serviceNameSchema),
   globalLimiter,
   jwtMiddleware,
   auditMiddleware,
