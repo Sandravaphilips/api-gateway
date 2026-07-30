@@ -12,12 +12,20 @@ app.use(express.json());
 
 app.use("", authRouter);
 
-connectToRabbitMQ()
-  .then(() => {
-    app.listen(config.AUTH_PORT, () => {
-      console.log(`Server is running on port ${config.AUTH_PORT}`);
-    });
-  })
-  .catch((error: any) => {
-    console.error("Failed to connect to RabbitMQ:", error);
-  });
+app.listen(config.AUTH_PORT, () => {
+  console.log(`Server is running on port ${config.AUTH_PORT}`);
+});
+
+const connectBrokerWithRetry = async () => {
+  try {
+    await connectToRabbitMQ();
+  } catch (error: any) {
+    console.error(
+      "Failed to connect to RabbitMQ. Retrying in 5 seconds:",
+      error,
+    );
+    setTimeout(connectBrokerWithRetry, 5000);
+  }
+};
+
+connectBrokerWithRetry();
