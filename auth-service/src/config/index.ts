@@ -6,7 +6,9 @@ const configSchema = z.object({
   RABBITMQ_URL: z.string().url().refine((url: string) => url.startsWith("amqp://") || url.startsWith("amqps://"), {
     message: "RABBITMQ_URL must start with 'amqp://' or 'amqps://'",
   }),
-  JWT_SECRET: z.string().min(10),
+  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  JWT_ACCESS_SECRET: z.string().min(10),
+  JWT_REFRESH_SECRET: z.string().min(10),
 });
 
 const parsedConfig = configSchema.safeParse(process.env);

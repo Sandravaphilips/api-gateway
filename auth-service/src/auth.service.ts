@@ -1,4 +1,5 @@
 import type { IUser } from "./types";
+const { generateTokens, hashToken, verifyToken } = require("./utils/token");
 
 const config = require("./config");
 const bcrypt = require("bcrypt");
@@ -36,15 +37,73 @@ async function loginUser(usernameOrEmail: string, password: string) {
       "Invalid details. Please check your username/email and password.",
     );
   }
+  
+  const { accessToken, refreshToken } = generateTokens(user._id);
 
-  const token = jwt.sign({ id: user._id }, config.JWT_SECRET, {
-    expiresIn: "1h",
-  });
+  const hashedToken = hashToken(refreshToken);
+
+  user.refreshTokens.push(hashedToken);
+  await user.save();
 
   return {
     user: { username: user.username, email: user.email, id: user._id },
-    token,
+    accessToken,
+    refreshToken,
   };
 }
 
-module.exports = { registerUser, loginUser };
+async function refreshToken(oldRefreshToken: string) {
+  const decoded = verifyToken(oldRefreshToken, config.JWT_REFRESH_SECRET);
+  const hashedOldRefreshToken = hashToken(oldRefreshToken);
+  if (!decoded) {
+    await User.updateOne(
+      { refreshTokens: hashedOldRefreshToken },
+      { $pull: { refreshTokens: hashedOldRefreshToken } },
+    );
+    throw new Error("Invalid refresh token");
+  }
+
+  const user = await User.findById(decoded.id);
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const tokenIndex = user.refreshTokens.indexOf(hashedOldRefreshToken);
+
+  if (tokenIndex === -1) {
+    user.refreshTokens = [];
+    await user.save();
+    throw new Error("Invalid refresh token", {
+      cause: "TokenReuseDetected",
+    });
+  }
+
+  const { accessToken, refreshToken } = generateTokens(user._id);
+  user.refreshTokens[tokenIndex] = hashToken(refreshToken);
+  await user.save();
+
+  return { userId: decoded.id, accessToken, refreshToken };
+}
+
+async function logoutUser(refreshToken: string) {
+  const decoded = verifyToken(refreshToken, config.JWT_REFRESH_SECRET);
+  if (!decoded) {
+    throw new Error("Invalid refresh token");
+  }
+
+  const user = await User.findById(decoded.id);
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const hashedRefreshToken = hashToken(refreshToken);
+  const tokenIndex = user.refreshTokens.indexOf(hashedRefreshToken);
+  if (tokenIndex !== -1) {
+    user.refreshTokens.splice(tokenIndex, 1);
+    await user.save();
+  }
+
+  return { userId: decoded.id };
+}
+
+module.exports = { registerUser, loginUser, refreshToken, logoutUser };

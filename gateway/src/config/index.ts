@@ -10,7 +10,7 @@ const configSchema = z.object({
   }),
   AUTH_SERVICE_URL: z.string().url(),
   PROTECTED_SERVICE_URL: z.string().url(),
-  JWT_SECRET: z.string().min(10),
+  JWT_ACCESS_SECRET: z.string().min(10),
 });
 
 const parsedConfig = configSchema.safeParse(process.env);
