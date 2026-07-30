@@ -1,7 +1,8 @@
-import type { Request, Response, NextFunction } from "express";
+import type { Response, NextFunction } from "express";
 import type { AuthRequest, JwtUser } from "../types";
 
 const jwt = require("jsonwebtoken");
+const config = require("../config");
 const { publicRoutes } = require("../constants");
 
 const jwtMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -16,7 +17,7 @@ const jwtMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
     return res.status(401).json({ message: "No token provided" });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err: any, user: JwtUser) => {
+  jwt.verify(token, config.JWT_ACCESS_SECRET, (err: any, user: JwtUser) => {
     if (err) {
       return res.status(401).json({ message: "Invalid or expired token" });
     }

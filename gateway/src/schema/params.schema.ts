@@ -1,8 +1,9 @@
 const z = require("zod");
+const { allowedServices } = require("../constants");
 
 const serviceNameSchema = z.object({
-  serviceName: z.enum(['auth', 'protected'], {
-    message: 'Target service does not exist.',
+  serviceName: z.enum(allowedServices, {
+    message: "Target service does not exist.",
   }),
 });
 

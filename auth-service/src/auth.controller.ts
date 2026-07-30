@@ -1,6 +1,11 @@
 import type { Request, Response } from "express";
 
-const { registerUser, loginUser, refreshToken: refreshHandler, logoutUser } = require("./auth.service");
+const {
+  registerUser,
+  loginUser,
+  refreshToken: refreshHandler,
+  logoutUser,
+} = require("./auth.service");
 const config = require("./config");
 const getCookie = require("./utils/cookie");
 const publishAuditEvent = require("./utils/event");
@@ -72,7 +77,9 @@ async function login(req: Request, res: Response) {
 
     delete userResponse.refreshToken; // Remove refreshToken from the response for security
 
-    res.status(200).json({ message: "User logged in successfully", ...userResponse });
+    res
+      .status(200)
+      .json({ message: "User logged in successfully", ...userResponse });
   } catch (error: any) {
     publishAuditEvent({
       userId: null,
@@ -101,13 +108,14 @@ const refresh = async (req: Request, res: Response) => {
   }
 
   try {
-    const { userId, accessToken, refreshToken } = await refreshHandler(oldRefreshToken);
+    const { userId, accessToken, refreshToken } =
+      await refreshHandler(oldRefreshToken);
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: config.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days 
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: "/v1/api/auth",
     });
 
@@ -123,7 +131,9 @@ const refresh = async (req: Request, res: Response) => {
 
     publishAuditEvent(auditEvent);
 
-    res.status(200).json({ message: "Token refreshed successfully", accessToken });
+    res
+      .status(200)
+      .json({ message: "Token refreshed successfully", accessToken });
   } catch (error: any) {
     publishAuditEvent({
       userId: null,
@@ -141,7 +151,12 @@ const refresh = async (req: Request, res: Response) => {
 
     if (error.cause === "TokenReuseDetected") {
       res.clearCookie("refreshToken", { path: "/v1/api/auth" });
-      return res.status(403).json({ message: "Refresh token reuse detected. All sessions have been invalidated." });
+      return res
+        .status(403)
+        .json({
+          message:
+            "Refresh token reuse detected. All sessions have been invalidated.",
+        });
     }
 
     res.status(401).json({ message: error.message });
@@ -156,7 +171,6 @@ const logout = async (req: Request, res: Response) => {
   }
 
   try {
-
     const { userId } = await logoutUser(oldRefreshToken);
 
     res.clearCookie("refreshToken", { path: "/v1/api/auth" });

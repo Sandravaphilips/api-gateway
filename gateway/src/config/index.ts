@@ -5,9 +5,15 @@ const configSchema = z.object({
   AUTH_PORT: z.string().regex(/^\d+$/).transform(Number).default("3001"),
   PROTECTED_PORT: z.string().regex(/^\d+$/).transform(Number).default("3002"),
   DATABASE_URL: z.string().url(),
-  RABBITMQ_URL: z.string().url().refine((url: string) => url.startsWith("amqp://") || url.startsWith("amqps://"), {
-    message: "RABBITMQ_URL must start with 'amqp://' or 'amqps://'",
-  }),
+  RABBITMQ_URL: z
+    .string()
+    .url()
+    .refine(
+      (url: string) => url.startsWith("amqp://") || url.startsWith("amqps://"),
+      {
+        message: "RABBITMQ_URL must start with 'amqp://' or 'amqps://'",
+      },
+    ),
   AUTH_SERVICE_URL: z.string().url(),
   PROTECTED_SERVICE_URL: z.string().url(),
   JWT_ACCESS_SECRET: z.string().min(10),
@@ -20,4 +26,4 @@ if (!parsedConfig.success) {
   process.exit(1);
 }
 
-module.exports = parsedConfig.data;;
+module.exports = parsedConfig.data;

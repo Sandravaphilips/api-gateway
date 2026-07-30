@@ -20,8 +20,7 @@ const createRateLimiter = (
   windowSizeInMinutes: number,
 ) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    const ip =
-      (req.headers["x-forwarded-for"] as string) || req.ip || "unknown";
+    const ip = req.ip || "unknown";
     const now = Date.now();
 
     let record = store.get(ip);
@@ -51,8 +50,7 @@ const loginAttemptsStore = new Map<string, LoginRecord>();
 
 const createAuthRateLimiter = () => {
   return (req: Request, res: Response, next: NextFunction) => {
-    const ip =
-      (req.headers["x-forwarded-for"] as string) || req.ip || "unknown";
+    const ip = req.ip || "unknown";
     const now = Date.now();
     const record = loginAttemptsStore.get(ip);
 
@@ -61,11 +59,9 @@ const createAuthRateLimiter = () => {
       const remainingMinutes = Math.ceil(remainingSeconds / 60);
 
       res.setHeader("Retry-After", remainingSeconds.toString());
-      return res
-        .status(429)
-        .json({
-          message: `Too many failed login attempts. Please try again in ${remainingMinutes} minute(s).`,
-        });
+      return res.status(429).json({
+        message: `Too many failed login attempts. Please try again in ${remainingMinutes} minute(s).`,
+      });
     }
 
     res.on("finish", () => {
@@ -82,8 +78,11 @@ const createAuthRateLimiter = () => {
         currentRecord.attempts++;
 
         if (currentRecord.attempts >= 3) {
-          const lockoutMinutes = currentRecord.lockoutLevel === 0 ? 15 : currentRecord.lockoutLevel * 30;
-          
+          const lockoutMinutes =
+            currentRecord.lockoutLevel === 0
+              ? 15
+              : currentRecord.lockoutLevel * 30;
+
           currentRecord.blockedUntil = now + lockoutMinutes * 60 * 1000;
           currentRecord.attempts = 0;
           currentRecord.lockoutLevel++;

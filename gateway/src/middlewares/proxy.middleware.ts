@@ -2,7 +2,6 @@ import type { Request, Response, NextFunction } from "express";
 
 const config = require("../config");
 const { createProxyMiddleware } = require("http-proxy-middleware");
-const { allowedServices } = require("../constants");
 
 const proxyCache = new Map<string, ReturnType<typeof createProxyMiddleware>>();
 
@@ -23,9 +22,6 @@ const getProxy = (serviceName: string) => {
 
 const proxyMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const serviceName = req.params.serviceName as string;
-  if (!allowedServices.includes(serviceName)) {
-    return res.status(404).json({ message: `Service not found` });
-  }
 
   const proxy = getProxy(serviceName);
 

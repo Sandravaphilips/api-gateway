@@ -3,10 +3,18 @@ const z = require("zod");
 const configSchema = z.object({
   AUTH_PORT: z.string().regex(/^\d+$/).transform(Number).default("3001"),
   DATABASE_URL: z.string().url(),
-  RABBITMQ_URL: z.string().url().refine((url: string) => url.startsWith("amqp://") || url.startsWith("amqps://"), {
-    message: "RABBITMQ_URL must start with 'amqp://' or 'amqps://'",
-  }),
-  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  RABBITMQ_URL: z
+    .string()
+    .url()
+    .refine(
+      (url: string) => url.startsWith("amqp://") || url.startsWith("amqps://"),
+      {
+        message: "RABBITMQ_URL must start with 'amqp://' or 'amqps://'",
+      },
+    ),
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default("development"),
   JWT_ACCESS_SECRET: z.string().min(10),
   JWT_REFRESH_SECRET: z.string().min(10),
 });
@@ -18,4 +26,4 @@ if (!parsedConfig.success) {
   process.exit(1);
 }
 
-module.exports = parsedConfig.data;;
+module.exports = parsedConfig.data;

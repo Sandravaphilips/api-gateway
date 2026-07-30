@@ -37,7 +37,7 @@ async function loginUser(usernameOrEmail: string, password: string) {
       "Invalid details. Please check your username/email and password.",
     );
   }
-  
+
   const { accessToken, refreshToken } = generateTokens(user._id);
 
   const hashedToken = hashToken(refreshToken);
