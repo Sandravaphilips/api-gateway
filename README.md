@@ -2,8 +2,6 @@
 
 A simple microservices architecture with an API gateway, authentication service, and audit logging. Built to brush up on Nodejs + Typescript and learn how services talk to each other.
 
-**This is still a work in progress**
-
 ## What's Inside
 
 **gateway** — The front door. Routes requests to the right service and checks that you're logged in.
